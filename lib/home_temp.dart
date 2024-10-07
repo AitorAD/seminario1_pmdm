@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seminario_1/providers/menu_providers.dart';
+import 'package:seminario_1/utils/icono_string.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -18,22 +19,22 @@ class HomePage extends StatelessWidget {
         print(snapshot.data);
         //Crearemos el ListView
         return ListView(
-          children: _listaItems(snapshot.data),
+          children: _listaItems(snapshot.data!, context),
         );
       },
     );
   }
 
-  List<Widget> _listaItems(List<dynamic> data) {
+  List<Widget> _listaItems(List<dynamic> data, BuildContext context) {
     final List<Widget> opciones = [];
-    // Recorreremos las opciones
-    // Anteriormente esto lo hicimos con un for extendido for in o con un .map
     data.forEach((opt) {
       final widgetTemp = ListTile(
         title: Text(opt['texto']),
-        leading: Icon(Icons.account_circle, color: Colors.blue),
+        leading: getIcon(opt['icon']),
         trailing: Icon(Icons.keyboard_arrow_right, color: Colors.blue),
-        onTap: () {},
+        onTap: () {
+          Navigator.pushNamed(context, opt['ruta']);
+        },
       );
       opciones
         ..add(widgetTemp)
