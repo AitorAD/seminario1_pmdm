@@ -11,12 +11,10 @@ class HomePage extends StatelessWidget {
   Widget _lista() {
     return FutureBuilder(
       future: menuProvider.cargarData(),
-      //Argumento opcional, y será la información que tendrá por defecto mientras
-      //no se haya resuelto la promesa
-      // initialData: [],
+      // Argumento opcional, y será la información que tendrá por defecto mientras
+      // no se haya resuelto la promesa
+      initialData: [],
       builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-        print('builder');
-        print(snapshot.data);
         //Crearemos el ListView
         return ListView(
           children: _listaItems(snapshot.data!, context),
@@ -36,9 +34,7 @@ class HomePage extends StatelessWidget {
           Navigator.pushNamed(context, opt['ruta']);
         },
       );
-      opciones
-        ..add(widgetTemp)
-        ..add(Divider());
+      opciones..add(widgetTemp)..add(Divider());
     });
     return opciones;
   }
