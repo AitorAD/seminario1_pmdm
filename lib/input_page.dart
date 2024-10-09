@@ -8,21 +8,21 @@ class InputPage extends StatefulWidget {
 class _InputPageState extends State<InputPage> {
   String _nombre = '';
   String _email = '';
+  String _password = '';
+  String passwordSecurity = '';
   String _fecha = '';
   TextEditingController _inputFieldDateController = new TextEditingController();
-  List<String> _hobbies = ['Leer', 'Ver series', 'Viajar', 'Deporte'];
-  String _opcionSeleccionada = 'Leer';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Inputs'),
+        title: Text('Datos'),
       ),
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         children: [
-          _crearInput(),
+          _crearNombre(),
           Divider(),
           _crearEmail(),
           Divider(),
@@ -30,22 +30,37 @@ class _InputPageState extends State<InputPage> {
           Divider(),
           _crearFecha(context),
           Divider(),
-          _crearDropwdown(),
-          Divider(),
-          _crearPersona(),
+          FloatingActionButton(
+            child: Icon(Icons.save),
+            onPressed: () {
+              if (_nombre.isNotEmpty &&
+                  _email.isNotEmpty &&
+                  _password.isNotEmpty &&
+                  _fecha.isNotEmpty) {
+                _mostrarAlert(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Por favor, completa todos los campos.'),
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              }
+            },
+          ),
         ],
       ),
     );
   }
 
-  Widget _crearInput() {
+  Widget _crearNombre() {
     return TextField(
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
           counter: Text('Letras ${_nombre.length}'),
-          hintText: 'Nombre de la persona',
+          hintText: 'Ej. Aitor Agulló Duque',
           labelText: 'Nombre',
-          helperText: 'Sólo es el nombre',
           suffixIcon: Icon(Icons.accessibility),
           icon: Icon(Icons.account_circle),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
@@ -57,18 +72,11 @@ class _InputPageState extends State<InputPage> {
     );
   }
 
-  Widget _crearPersona() {
-    return ListTile(
-      title: Text('Nombre: $_nombre'),
-      subtitle: Text('E-mail: $_email'),
-    );
-  }
-
   Widget _crearEmail() {
     return TextField(
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
-            hintText: 'Email',
+            hintText: 'Ej. aduqueagullo@gmail.com',
             labelText: 'Email',
             suffixIcon: Icon(Icons.alternate_email),
             icon: Icon(Icons.email),
@@ -83,14 +91,27 @@ class _InputPageState extends State<InputPage> {
     return TextField(
         obscureText: true,
         decoration: InputDecoration(
+            counter: Text('Caracteres ${_password.length}'),
             hintText: 'Password',
             labelText: 'Password',
+            helperText: 'Seguridad: $passwordSecurity',
             suffixIcon: Icon(Icons.lock_open),
             icon: Icon(Icons.lock),
             border:
                 OutlineInputBorder(borderRadius: BorderRadius.circular(20))),
         onChanged: (valor) => setState(() {
-              _email = valor;
+              _password = valor;
+              if (valor.length >= 16) {
+                passwordSecurity = "Segura";
+              } else if (valor.length >= 10) {
+                passwordSecurity = "Buena";
+              } else if (valor.length >= 8) {
+                passwordSecurity = "Mejorable";
+              } else if (valor.length >= 6) {
+                passwordSecurity = "Mala";
+              } else {
+                passwordSecurity = "Muy mala";
+              }
             }));
   }
 
@@ -125,34 +146,47 @@ class _InputPageState extends State<InputPage> {
     }
   }
 
-  Widget _crearDropwdown() {
-    return Row(
-      children: [
-        Icon(Icons.select_all),
-        SizedBox(width: 30),
-        Expanded(
-          child: DropdownButton(
-            value: _opcionSeleccionada,
-            items: getOpcionesDropdown(),
-            onChanged: (opt) {
-              setState(() {
-                _opcionSeleccionada = opt!;
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  List<DropdownMenuItem<String>> getOpcionesDropdown() {
-    List<DropdownMenuItem<String>> lista = [];
-    _hobbies.forEach((element) {
-      lista.add(DropdownMenuItem(
-        child: Text(element),
-        value: element,
-      ));
-    });
-    return lista;
+  void _mostrarAlert(BuildContext context) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Text('¿Son correctos estos datos?'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                    'Nombre: $_nombre \nEmail: $_email \nFecha Nacimiento: $_fecha'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                child: Text('Cancelar'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              TextButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (context) {
+                        return AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          title: Center(
+                              child: Text('Datos almacenados correctamente')),
+                        );
+                      });
+                },
+                //onPressed: () => Navigator.of(context).pop(),
+              )
+            ],
+          );
+        });
   }
 }

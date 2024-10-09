@@ -5,7 +5,7 @@ import 'package:seminario_1/utils/icono_string.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text('Componentes')), body: _lista());
+    return Scaffold(appBar: AppBar(title: Text('Bienvenido/a')), body: _lista());
   }
 
   Widget _lista() {
